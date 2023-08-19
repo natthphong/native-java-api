@@ -2,6 +2,7 @@ package utils;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,6 +30,12 @@ public class HttpUtil {
 
 
         return queryParams;
+    }
+
+
+    public static String errorJsonMessage(String message){
+        String timeStamp = LocalDateTime.now().format(Constant.Date.DATETIME_FORMATTER);
+        return String.format("{\"timeStamp\": \"%s\", \"message\": \"%s\"}", timeStamp, message);
     }
 
 

@@ -1,4 +1,4 @@
-package http_enum;
+package Httpenum;
 
 public enum HttpStatus {
     OK(200, "OK"),
