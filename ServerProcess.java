@@ -6,9 +6,9 @@ import controller.CustomerController;
 import model.CustomerModel;
 import repository.CustomerRepository;
 import service.CustomerService;
+import utils.HttpResponse;
 import utils.HttpUtil;
 import utils.JsonConverter;
-import utils.SystemOutUtil;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -16,7 +16,6 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -71,19 +70,9 @@ class ServerProcess implements Runnable {
 
                 //ROUTE
                 Map<String,String> param = HttpUtil.getQueryParameters(path);
-                List<CustomerModel> list = new ArrayList<>();
-                CustomerModel customerModel = new CustomerModel();
-                customerModel.setAge(10);
-                customerModel.setEmail("taza3aza@hotmail.com");
-                customerModel.setPassword("sfsfsd");
-                customerModel.setUsername("tar");
-                list.add(customerModel);
-                list.add(customerModel);
-                String customerTest = JsonConverter.toJsonString(list);
-                HttpResponse.response(ps, customerTest, HttpStatus.OK, HttpContentType.APPLICATION_JSON);
                 if (path.startsWith("/v1/customer")){
                     CustomerRepository customerRepository  = new CustomerRepository(connection);
-                    CustomerService customerService = new CustomerService(customerRepository,s);
+                    CustomerService customerService = new CustomerService(customerRepository,s, ps);
                     CustomerController controller = new CustomerController(customerService);
                     controller.run(requestBodyString,param,path.substring("/v1/customer".length()).trim());
                 }

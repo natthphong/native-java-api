@@ -1,3 +1,5 @@
+package utils;
+
 import Httpenum.HttpContentType;
 import Httpenum.HttpStatus;
 import utils.Constant;
@@ -7,8 +9,6 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 
 public class HttpResponse {
 

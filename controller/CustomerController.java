@@ -32,10 +32,10 @@ public class CustomerController {
 
 
     public void getCustomerAll() {
-        System.out.println("getALl");
+        customerService.getCustomerAll();
     }
     public void insertCustomer(CustomerModel body){
-        System.out.println("hello "  + body.getEmail());
+        customerService.insertCustomer(body);
     }
 
 

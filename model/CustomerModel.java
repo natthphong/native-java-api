@@ -6,17 +6,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class CustomerModel {
-    private int id;
+    private Long id;
     private int age;
     private String email;
     private String password;
     private String username;
-    private LocalDate date  = LocalDate.now();
-    private LocalDateTime timeStamp = LocalDateTime.now();
-    public List<String> test = List.of("test" , "test2");
 
-
-    public CustomerModel(int id, int age, String email, String password, String username) {
+    public CustomerModel(Long id, int age, String email, String password, String username) {
         this.id = id;
         this.age = age;
         this.email = email;
@@ -24,19 +20,20 @@ public class CustomerModel {
         this.username = username;
     }
 
-    public CustomerModel() {
-        // Default constructor
-    }
-
-    // Getters and setters for each field
-
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
+
+    public CustomerModel() {
+    }
+
+
+
+
 
     public int getAge() {
         return age;
