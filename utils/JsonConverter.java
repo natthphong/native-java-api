@@ -23,13 +23,13 @@ public class JsonConverter {
                 jsonBuilder.deleteCharAt(jsonBuilder.length() - 1);
             }
             jsonBuilder.append("]");
-        }else if (object instanceof LocalDate) {
+        } else if (object instanceof LocalDate) {
             jsonBuilder.append("\"").append(escapeJson(((LocalDate) object).format(Constant.Date.DATE_FORMATTER))).append("\"");
         } else if (object instanceof LocalDateTime) {
             jsonBuilder.append("\"").append(escapeJson(((LocalDateTime) object).format(Constant.Date.DATETIME_FORMATTER))).append("\"");
         } else if (object instanceof String) {
             jsonBuilder.append("\"").append(escapeJson(object.toString())).append("\"");
-        } else if (object instanceof Number || object instanceof Boolean  ) {
+        } else if (object instanceof Number || object instanceof Boolean) {
             jsonBuilder.append(object);
         } else {
             jsonBuilder.append("{");
@@ -124,7 +124,7 @@ public class JsonConverter {
             for (Field field : fields) {
                 String fieldName = field.getName();
                 if (json.contains("\"" + fieldName + "\":")) {
-                    int start = json.indexOf("\"" + fieldName + "\":") + fieldName.length() + 4;
+                    int start = json.indexOf("\"" + fieldName + "\":") + fieldName.length() + 3;
                     int end = json.indexOf(",", start);
                     if (end == -1) {
                         end = json.indexOf("}", start);
@@ -132,18 +132,21 @@ public class JsonConverter {
                     String fieldValue = json.substring(start, end).trim();
                     fieldValue = fieldValue.replaceAll("\"", "");
                     field.setAccessible(true);
-
                     if (field.getType() == String.class) {
                         field.set(instance, fieldValue);
                     } else if (field.getType() == int.class || field.getType() == Integer.class) {
                         if (!fieldValue.isEmpty()) {
                             field.set(instance, Integer.parseInt(fieldValue));
                         }
+                    } else if (field.getType() == long.class || field.getType() == Long.class) {
+                        if (!fieldValue.isEmpty()) {
+                            field.set(instance, Long.parseLong(fieldValue));
+                        }
                     } else if (field.getType() == boolean.class || field.getType() == Boolean.class) {
                         if (!fieldValue.isEmpty()) {
                             field.set(instance, Boolean.parseBoolean(fieldValue));
                         }
-                    }else if (field.getType() == LocalDate.class) {
+                    } else if (field.getType() == LocalDate.class) {
                         LocalDate localDate = LocalDate.parse(fieldValue, Constant.Date.DATE_FORMATTER);
                         field.set(instance, localDate);
                     } else if (field.getType() == LocalDateTime.class) {
@@ -157,5 +160,6 @@ public class JsonConverter {
             throw new RuntimeException(e);
         }
     }
+
 
 }

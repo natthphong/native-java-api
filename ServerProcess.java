@@ -3,20 +3,17 @@ import Httpenum.HttpMethod;
 import Httpenum.HttpStatus;
 import configuration.ServerConfiguration;
 import controller.CustomerController;
-import model.CustomerModel;
-import repository.CustomerRepository;
+import repository.Impl.CustomerRepositoryImpl;
 import service.CustomerService;
+import utils.BcryptUtil;
 import utils.HttpResponse;
 import utils.HttpUtil;
-import utils.JsonConverter;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 class ServerProcess implements Runnable {
@@ -71,8 +68,9 @@ class ServerProcess implements Runnable {
                 //ROUTE
                 Map<String,String> param = HttpUtil.getQueryParameters(path);
                 if (path.startsWith("/v1/customer")){
-                    CustomerRepository customerRepository  = new CustomerRepository(connection);
-                    CustomerService customerService = new CustomerService(customerRepository,s, ps);
+                    BcryptUtil bcryptUtil = new BcryptUtil();
+                    CustomerRepositoryImpl customerRepositoryImpl = new CustomerRepositoryImpl(connection,bcryptUtil);
+                    CustomerService customerService = new CustomerService(customerRepositoryImpl,s, ps, bcryptUtil);
                     CustomerController controller = new CustomerController(customerService);
                     controller.run(requestBodyString,param,path.substring("/v1/customer".length()).trim());
                 }

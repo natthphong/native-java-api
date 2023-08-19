@@ -26,7 +26,7 @@ public class Server {
             Connection connection = DriverManager.getConnection(jdbcUrl, dbUsername, dbPassword);
             System.out.println("=".repeat(50).concat("\nConnected DB : ").concat(jdbcUrl).concat("\n").concat("=".repeat(50)));
             ServerSocket ss = ServerSocketFactory.getDefault().createServerSocket(8080, 10);
-            if (true){
+            if (false){
                 InitSql(connection);
             }
             while (true) {
@@ -41,7 +41,6 @@ public class Server {
     }
 
     public static  void  InitSql(Connection connection){
-        //init sql script
         String sqlDirectoryPath = "/Users/natthaohong/Desktop/Java/tarWay";
         System.out.println("=".repeat(50).concat("\nInit Sql Script : ").concat(sqlDirectoryPath).concat("\n").concat("=".repeat(50)));
         File sqlDirectory = new File(sqlDirectoryPath);
