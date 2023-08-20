@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 public class SystemOutUtil {
 
@@ -16,6 +17,8 @@ public class SystemOutUtil {
                 printArray(obj);
             } else if (obj instanceof List) {
                 printList((List<?>) obj);
+            } else if (obj instanceof Map) {
+                printMap((Map<?, ?>) obj);
             } else {
                 printFields(obj);
             }
@@ -33,6 +36,12 @@ public class SystemOutUtil {
             }
         }
         System.out.print("]");
+    }
+    private static void printMap(Map<?, ?> map) {
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            System.out.print(entry.getKey() + ": " + entry.getValue() + " | ");
+        }
+        System.out.println("\n");
     }
 
     private static void printList(List<?> list) {

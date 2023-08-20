@@ -1,5 +1,7 @@
 package utils;
 
+import exception.ProjectException;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDateTime;
@@ -25,7 +27,7 @@ public class HttpUtil {
                 }
             }
         }catch (URISyntaxException ex){
-            throw new RuntimeException(ex.getMessage());
+            throw new ProjectException(ex.getMessage());
         }
 
 

@@ -1,6 +1,7 @@
 package repository.Impl;
 
-import exception.BadRequestException;
+import Httpenum.HttpStatus;
+import exception.ProjectException;
 import model.CustomerModel;
 import repository.CustomerRepository;
 import utils.*;
@@ -23,7 +24,7 @@ public class CustomerRepositoryImpl implements CustomerRepository {
         List<CustomerModel> customers = new ArrayList<>();
 
         try (Statement statement = connection.createStatement()) {
-            String query = " SELECT * FROM customer_info ";
+            String query = " SELECT * FROM customer_info Where is_delete = 'N' ";
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
                 CustomerModel customer = new CustomerModel();
@@ -41,7 +42,7 @@ public class CustomerRepositoryImpl implements CustomerRepository {
     }
 
     @Override
-    public void saveCustomer(CustomerModel body) throws BadRequestException {
+    public void saveCustomer(CustomerModel body) {
 
         List<Object> param = new ArrayList<>();
         String query = """             
@@ -81,8 +82,8 @@ public class CustomerRepositoryImpl implements CustomerRepository {
                 for (var e : param) preparedStatement.setObject(col++, e);
                 preparedStatement.setLong(col, body.getId());
             } else {
-                if (!Validate.validateNotNullNotBlank(body.getAge(),body.getEmail(),body.getUsername(),body.getPassword())){
-                    throw new BadRequestException("");
+                if (!Validate.validateNotNullNotBlank(body.getAge(), body.getEmail(), body.getUsername(), body.getPassword())) {
+                    throw new ProjectException("Bad Request", HttpStatus.BAD_REQUEST);
                 }
                 preparedStatement.setInt(col++, body.getAge());
                 preparedStatement.setString(col++, body.getEmail());
@@ -91,9 +92,41 @@ public class CustomerRepositoryImpl implements CustomerRepository {
             }
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } catch (BadRequestException e) {
-            throw e;
+            throw new ProjectException(e.getMessage());
         }
+    }
+
+    @Override
+    public void deleteCustomer(Long id) {
+        String sql = " UPDATE db.customer_info SET is_delete = 'Y'  WHERE id =? ";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            int col = 1;
+            preparedStatement.setLong(col,id);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new ProjectException(e.getMessage());
+        }
+
+    }
+
+    @Override
+    public CustomerModel findById(Long id) {
+        CustomerModel customer = new CustomerModel();
+        String query = "SELECT * FROM customer_info WHERE is_delete = 'N' AND id = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setLong(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                customer.setId(resultSet.getLong("id"));
+                customer.setAge(resultSet.getInt("age"));
+                customer.setEmail(resultSet.getString("email"));
+                customer.setPassword(resultSet.getString("password"));
+                customer.setUsername(resultSet.getString("username"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return customer;
     }
 }

@@ -1,9 +1,8 @@
 package service;
 
 import Httpenum.HttpContentType;
-import Httpenum.HttpMethod;
 import Httpenum.HttpStatus;
-import exception.BadRequestException;
+import exception.ProjectException;
 import model.CustomerModel;
 import model.ResponseModel;
 import repository.CustomerRepository;
@@ -31,22 +30,33 @@ public class CustomerService {
 
     public void getCustomerAll() {
         List<CustomerModel> list = customerRepositoryImpl.findAll();
-        SystemOutUtil.printObjects(list);
         HttpResponse.response(ps, JsonConverter.toJsonString(list), HttpStatus.OK, HttpContentType.APPLICATION_JSON);
     }
 
 
     public void insertCustomer(CustomerModel body) {
-        try {
             customerRepositoryImpl.saveCustomer(body);
             HttpResponse.response(ps, JsonConverter.toJsonString(ResponseModel.responseModelOk()), HttpStatus.CREATED, HttpContentType.APPLICATION_JSON);
-        }catch (BadRequestException ex){
-            HttpResponse.response(ps,HttpUtil.errorJsonMessage("Bad Request"),HttpStatus.BAD_REQUEST,HttpContentType.APPLICATION_JSON);
-        }
 
     }
 
     public void helloWorld() {
         HttpResponse.response(ps,"HELLO WORLD", HttpStatus.OK, HttpContentType.TEXT_PLAIN);
+    }
+
+    public void deleteCustomer(Long id) {
+        customerRepositoryImpl.deleteCustomer(id);
+        HttpResponse.response(ps, JsonConverter.toJsonString(ResponseModel.responseModelOk()), HttpStatus.OK, HttpContentType.APPLICATION_JSON);
+
+    }
+
+    public void getCustomer(Long id) {
+
+        CustomerModel customerModel = customerRepositoryImpl.findById(id);
+        String json = JsonConverter.toJsonString(customerModel);
+        if (json.equalsIgnoreCase("{}"))
+            throw new ProjectException("Id Not Found",HttpStatus.NOT_FOUND);
+        HttpResponse.response(ps, json, HttpStatus.OK, HttpContentType.APPLICATION_JSON);
+
     }
 }

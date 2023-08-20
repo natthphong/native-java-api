@@ -1,5 +1,3 @@
-import configuration.ServerConfiguration;
-
 import javax.net.ServerSocketFactory;
 import java.io.File;
 import java.io.IOException;
@@ -7,12 +5,12 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Comparator;
 
 public class Server {
 
@@ -26,7 +24,7 @@ public class Server {
             Connection connection = DriverManager.getConnection(jdbcUrl, dbUsername, dbPassword);
             System.out.println("=".repeat(50).concat("\nConnected DB : ").concat(jdbcUrl).concat("\n").concat("=".repeat(50)));
             ServerSocket ss = ServerSocketFactory.getDefault().createServerSocket(8080, 10);
-            if (false){
+            if (true){
                 InitSql(connection);
             }
             while (true) {
@@ -53,6 +51,7 @@ public class Server {
             return;
         }
         try {
+            Arrays.sort(sqlFiles, Comparator.comparing(File::getName));
             Statement statement = connection.createStatement();
             for (File sqlFile : sqlFiles) {
                 String sqlContent = new String(Files.readAllBytes(sqlFile.toPath()), StandardCharsets.UTF_8);
