@@ -1,6 +1,8 @@
 package utils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -77,6 +79,7 @@ public class JsonConverter {
         try {
             instance = clazz.newInstance();
             json = json.trim();
+
             if (json.startsWith("[") && json.endsWith("]")) {
                 json = json.substring(1, json.length() - 1);
                 String[] elements = json.split("\\},\\{");
@@ -88,6 +91,7 @@ public class JsonConverter {
                     }
                 }
             } else {
+
                 populateFields(instance, json);
             }
         } catch (IllegalAccessException | InstantiationException e) {
@@ -101,6 +105,7 @@ public class JsonConverter {
         List<T> list = new ArrayList<>();
         if (json.startsWith("[") && json.endsWith("]")) {
             json = json.substring(1, json.length() - 1);
+
             String[] elements = json.split("\\{");
             for (String element : elements) {
                 element = element.trim();
@@ -109,7 +114,9 @@ public class JsonConverter {
                         element = element.substring(0, element.length() - 1);
                     }
                     element = "{" + element;
+
                     T value = fromJsonString(element, elementType);
+
                     list.add(value);
                 }
             }
@@ -123,11 +130,21 @@ public class JsonConverter {
             Field[] fields = instance.getClass().getDeclaredFields();
             for (Field field : fields) {
                 String fieldName = field.getName();
-                if (json.contains("\"" + fieldName + "\":")) {
-                    int start = json.indexOf("\"" + fieldName + "\":") + fieldName.length() + 3;
+
+
+                if (json.contains("\"" + fieldName + "\":") || json.contains(fieldName+":")) {
+                    int start = 0;
+                    if (json.contains("\"" + fieldName + "\":")) {
+                        start = json.indexOf("\"" + fieldName + "\":") + fieldName.length() + 3;
+                    } else {
+                        start = json.indexOf(fieldName+":") + fieldName.length() + 1;
+                    }
                     int end = json.indexOf(",", start);
                     if (end == -1) {
                         end = json.indexOf("}", start);
+                    }
+                    if (json.substring(start).startsWith("[")) {
+                        end = json.indexOf("]", start) + 1;
                     }
                     String fieldValue = json.substring(start, end).trim();
                     fieldValue = fieldValue.replaceAll("\"", "");
@@ -155,6 +172,19 @@ public class JsonConverter {
                         if (!fieldValue.isEmpty()) {
                             LocalDateTime localDateTime = LocalDateTime.parse(fieldValue, Constant.Date.DATETIME_FORMATTER);
                             field.set(instance, localDateTime);
+                        }
+                    } else if (field.getType().isAssignableFrom(List.class)) {
+                        if (fieldValue.startsWith("[") && fieldValue.endsWith("]")) {
+                            Type fieldType = field.getGenericType();
+                            if (fieldType instanceof ParameterizedType) {
+                                ParameterizedType parameterizedType = (ParameterizedType) fieldType;
+                                Type[] typeArgs = parameterizedType.getActualTypeArguments();
+                                if (typeArgs.length == 1 && typeArgs[0] instanceof Class) {
+                                    Class<?> listElementType = (Class<?>) typeArgs[0];
+                                    List<?> listValue = fromJsonStringToList(fieldValue, listElementType);
+                                    field.set(instance, listValue);
+                                }
+                            }
                         }
                     }
                 }

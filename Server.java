@@ -1,3 +1,6 @@
+import model.CustomerModel;
+import model.TestHardModel;
+import utils.JsonConverter;
 import utils.SystemOutUtil;
 
 import javax.net.ServerSocketFactory;
@@ -10,10 +13,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Server {
     public static String USER_DIR = System.getProperty("user.dir");
@@ -32,11 +32,11 @@ public class Server {
             Connection connection = connectDb();
             System.out.println("=".repeat(75).concat("\nConnected DB : ").concat((String) appConfig.get("url")).concat("\n").concat("=".repeat(75)));
             ServerSocket ss = ServerSocketFactory.getDefault().createServerSocket(8080, 10);
-            if (Boolean.parseBoolean( (String) appConfig.get("enable-flyway"))) {
+            if (Boolean.parseBoolean((String) appConfig.get("enable-flyway"))) {
                 InitSql(connection);
             }
             long endTime = System.currentTimeMillis();
-            double executionTimeSeconds = (endTime - startTime)/1000.0;
+            double executionTimeSeconds = (endTime - startTime) / 1000.0;
             System.out.println("Total execution time: " + executionTimeSeconds + " seconds");
             while (true) {
                 Socket s = ss.accept();
