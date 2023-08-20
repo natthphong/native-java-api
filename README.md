@@ -1,5 +1,4 @@
-# my native api framework<br>
-when start framework<br>
+# my native-java api<br>
 =================<br>
 NATTHAPHONG CRUD <br>
 ================= <br>
