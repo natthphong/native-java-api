@@ -1,6 +1,9 @@
-FROM adoptopenjdk:17-jdk-hotspot
+FROM openjdk:19
 
-COPY . .
+WORKDIR /app
+
+COPY . /app
+
 RUN mkdir -p classes
 
 RUN javac -d classes -cp "./lib/mysql-connector-j-8.0.33.jar" \
