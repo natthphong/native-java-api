@@ -147,11 +147,15 @@ public class JsonConverter {
                             field.set(instance, Boolean.parseBoolean(fieldValue));
                         }
                     } else if (field.getType() == LocalDate.class) {
-                        LocalDate localDate = LocalDate.parse(fieldValue, Constant.Date.DATE_FORMATTER);
-                        field.set(instance, localDate);
+                        if (!fieldValue.isEmpty()) {
+                            LocalDate localDate = LocalDate.parse(fieldValue, Constant.Date.DATE_FORMATTER);
+                            field.set(instance, localDate);
+                        }
                     } else if (field.getType() == LocalDateTime.class) {
-                        LocalDateTime localDateTime = LocalDateTime.parse(fieldValue, Constant.Date.DATETIME_FORMATTER);
-                        field.set(instance, localDateTime);
+                        if (!fieldValue.isEmpty()) {
+                            LocalDateTime localDateTime = LocalDateTime.parse(fieldValue, Constant.Date.DATETIME_FORMATTER);
+                            field.set(instance, localDateTime);
+                        }
                     }
                 }
             }
