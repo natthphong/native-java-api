@@ -1,9 +1,28 @@
 #!/bin/bash
 
-
-if [ ! -d "classes" ]; then
-  mkdir classes
+if [ -d "classes" ]; then
+  echo "Remove classes"
+    rm -rf classes
 fi
-javac -cp "./lib/mysql-connector-java-8.0.33.jar" -d ./classes Server.java
+mkdir -p classes
+javac -d classes -cp "./lib/mysql-connector-j-8.0.33.jar" \
+    Httpenum/*.java \
+    configuration/*.java \
+    controller/*.java \
+    exception/*.java \
+    model/*.java \
+    repository/*.java \
+    repository/Impl/*.java \
+    service/*.java \
+    utils/*.java \
+    Server.java \
+    ServerProcess.java
 
-java -cp "./lib/mysql-connector-java-8.0.33.jar:./classes" Server
+if [ $? -eq 0 ]; then
+    echo "Compilation successful."
+
+    # Run the Java program
+    java -cp "classes:./lib/mysql-connector-j-8.0.33.jar" Server
+else
+    echo "Compilation failed."
+fi
