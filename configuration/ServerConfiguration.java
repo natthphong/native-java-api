@@ -8,7 +8,7 @@ public class ServerConfiguration {
             List.of("/v1/customer/all", "/v1/customer/**",
                     "/v1/customer/update", "/v1/customer/delete",
                     "/v1/customer/save" , "/v1/customer/login"
-                    ,"/v1/customer/profile" );
+                    ,"/v1/customer/profile" ,"/v1/customer/token");
 
 
     public static void addPathServer(List<String> paths) {

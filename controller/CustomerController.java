@@ -3,15 +3,12 @@ package controller;
 import Httpenum.HttpMethod;
 import Httpenum.HttpStatus;
 import exception.ProjectException;
+import model.Credential;
 import model.CustomerModel;
 import service.CustomerService;
-import utils.HttpResponse;
-import utils.JsonConverter;
-import utils.StringUtils;
-import utils.SystemOutUtil;
+import utils.*;
 
 import java.util.Map;
-import java.util.Objects;
 
 public class CustomerController {
 
@@ -22,7 +19,7 @@ public class CustomerController {
     }
 
 
-    public void run(String body, Map<String, String> param, String path, String method) {
+    public void run(String body, Map<String, String> param, String path, String method,String token) {
         switch (path) {
             case "/":
                 getHelloWord();
@@ -59,11 +56,32 @@ public class CustomerController {
             case "/login":
                 if (method.equalsIgnoreCase(HttpMethod.POST.getValue())){
                     if (StringUtils.isBlank(body)) throw new ProjectException("require body");
+                    var reqLogin = JsonConverter.fromJsonString(body, Credential.class);
+                    if (!Validate.validateNotNullNotBlank(reqLogin.getEmail(),reqLogin.getPassword()))
+                        throw new ProjectException("Bad Request",HttpStatus.BAD_REQUEST);
+                    login(reqLogin);
+                    break;
                 }
+                throw new ProjectException("Method Not Allow", HttpStatus.FORBIDDEN);
+            case "/token":
+                if (method.equalsIgnoreCase(HttpMethod.GET.getValue())){
+                    if (StringUtils.isBlank(token)) throw new ProjectException("require token",HttpStatus.FORBIDDEN);
+                    testToken(token);
+                    break;
+                }
+                throw new ProjectException("Method Not Allow", HttpStatus.FORBIDDEN);
             default:
                 throw new ProjectException("Invalid Path", HttpStatus.FORBIDDEN);
         }
 
+    }
+
+    private void testToken(String token) {
+        customerService.testToken(token);
+    }
+
+    private void login(Credential req) {
+        customerService.login(req);
     }
 
     private void getCustomer(Long id) {

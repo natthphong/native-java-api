@@ -54,12 +54,19 @@ class ServerProcess implements Runnable {
                 }
                 String line;
                 int contentLength = 0;
+                String bearerToken = null;
                 while ((line = br.readLine()) != null && !line.isEmpty()) {
 //                    System.out.println(line);
-                    if (line.startsWith("Content-Length:")) {
+                    if (line.startsWith("Authorization:")) {
+                        String authorizationHeader = line.substring("Authorization:".length()).trim();
+                        if (authorizationHeader.startsWith("Bearer")) {
+                            bearerToken = authorizationHeader.substring("Bearer".length()).trim();
+                        }
+                    } else if (line.startsWith("Content-Length:")) {
                         contentLength = Integer.parseInt(line.substring("Content-Length:".length()).trim());
                     }
                 }
+//                System.out.println(bearerToken);
                 char[] requestBody = new char[contentLength];
                 String requestBodyString = "";
                 if (contentLength > 0) {
@@ -75,7 +82,7 @@ class ServerProcess implements Runnable {
                     CustomerRepositoryImpl customerRepositoryImpl = new CustomerRepositoryImpl(connection, bcryptUtil);
                     CustomerService customerService = new CustomerService(customerRepositoryImpl, s, ps, bcryptUtil);
                     CustomerController controller = new CustomerController(customerService);
-                    controller.run(requestBodyString, param,path ,method);
+                    controller.run(requestBodyString, param,path ,method,bearerToken);
                 }
             }
             br.close();

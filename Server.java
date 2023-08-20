@@ -24,7 +24,7 @@ public class Server {
             Connection connection = DriverManager.getConnection(jdbcUrl, dbUsername, dbPassword);
             System.out.println("=".repeat(50).concat("\nConnected DB : ").concat(jdbcUrl).concat("\n").concat("=".repeat(50)));
             ServerSocket ss = ServerSocketFactory.getDefault().createServerSocket(8080, 10);
-            if (true){
+            if (false){
                 InitSql(connection);
             }
             while (true) {

@@ -13,4 +13,6 @@ public interface CustomerRepository {
     void deleteCustomer(Long id);
 
     CustomerModel findById(Long id);
+
+    CustomerModel findByEmail(String email);
 }

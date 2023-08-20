@@ -129,4 +129,25 @@ public class CustomerRepositoryImpl implements CustomerRepository {
 
         return customer;
     }
+
+    @Override
+    public CustomerModel findByEmail(String email) {
+        CustomerModel customer = new CustomerModel();
+        String query = "SELECT * FROM customer_info WHERE is_delete = 'N' AND email = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, email);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                customer.setId(resultSet.getLong("id"));
+                customer.setAge(resultSet.getInt("age"));
+                customer.setEmail(resultSet.getString("email"));
+                customer.setPassword(resultSet.getString("password"));
+                customer.setUsername(resultSet.getString("username"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return customer;
+    }
 }
